@@ -23,11 +23,15 @@ pygame.display.set_caption("Caça ao Tesouro")
 
 # Carrega a imagem de fundo
 imagem_de_fundo = pygame.image.load("images/background_jogo.jpg")
-imagem_de_fundo = pygame.transform.scale(imagem_de_fundo, (largura_tela, altura_tela))
+imagem_de_fundo = pygame.transform.scale(imagem_de_fundo, (largura_tela, altura_tela)) # Ajusta o tamanho conforme necessário
 
 # Carrega a imagem do tesouro
 imagem_tesouro = pygame.image.load("images/tesouro.png")
-imagem_tesouro = pygame.transform.scale(imagem_tesouro, (lado_celula - 2, lado_celula - 2))  # Ajuste o tamanho conforme necessário
+imagem_tesouro = pygame.transform.scale(imagem_tesouro, (lado_celula - 2, lado_celula - 2))  # Ajusta o tamanho conforme necessário
+
+# Carrega a imagem do tesouro
+imagem_buraco = pygame.image.load("images/buraco.png")
+imagem_buraco = pygame.transform.scale(imagem_buraco, (lado_celula - 2, lado_celula - 2))  # Ajusta o tamanho conforme necessário
 
 # Tela inicial
 tela.blit(imagem_de_fundo, (0, 0))
@@ -45,18 +49,27 @@ conteudo_celula = [[None for _ in range(num_linhas)] for _ in range(num_colunas)
 # Marca com 'T' exatamente 6 células
 num_tesouros = 0
 max_tesouros = 6  # Número desejado de tesouros
-
 while num_tesouros < max_tesouros:
     i = random.randint(0, num_linhas - 1)
     j = random.randint(0, num_colunas - 1)
     if conteudo_celula[i][j] is None:
         conteudo_celula[i][j] = "T"
         num_tesouros += 1
+        
+# Marca com 'B' exatamente 3 células
+num_buracos = 0
+max_buracos = 3
+while num_buracos < max_buracos:
+    i = random.randint(0, num_linhas - 1)
+    j = random.randint(0, num_colunas - 1)
+    if conteudo_celula[i][j] is None:
+        conteudo_celula[i][j] = "B"
+        num_buracos += 1
 
 # Calcula o número de tesouros ao redor das células
 for i in range(num_linhas):
     for j in range(num_colunas):
-        if conteudo_celula[i][j] != "T":
+        if conteudo_celula[i][j] not in ["T", "B"]:
             tesouros_redor = 0
 
             # Verifica a célula acima
@@ -82,7 +95,11 @@ for i in range(num_linhas):
 # Cria uma matriz para controlar a visualização do conteúdo das células
 celula_revelada = [[False for _ in range(num_linhas)] for _ in range(num_colunas)]
 jogo_cancelado = False
-score = 0
+
+# Variaveis para os jogadores
+score_jogador1 = 0
+score_jogador2 = 0
+turno_jogador1 = True # Se caso for False significa que é o segundo jogador
 
 # Laço do jogo
 while not jogo_cancelado:
@@ -109,7 +126,17 @@ while not jogo_cancelado:
                 celula_revelada[celula_x][celula_y] = True
                 # Atualiza o score se encontrar um tesouro
                 if conteudo_celula[celula_x][celula_y] == "T":
-                    score += 100
+                    if turno_jogador1:
+                        score_jogador1 += 100
+                    else:
+                        score_jogador2 += 100
+                elif conteudo_celula[celula_x][celula_y] == "B":
+                    if turno_jogador1:
+                        score_jogador1 -= 50
+                    else:
+                        score_jogador2 -= 50
+                        
+                turno_jogador1 = not turno_jogador1
 
         if tela_mudou:
             # Desenha a imagem de fundo a cada atualização
@@ -122,6 +149,9 @@ while not jogo_cancelado:
                         if conteudo_celula[i][j] == "T":
                             # Mostrar tesouro
                             tela.blit(imagem_tesouro, (i * lado_celula_largura + 1, j * lado_celula_altura + 1))
+                        elif conteudo_celula[i][j] == "B":
+                            # Mostrar tesouro
+                            tela.blit(imagem_buraco, (i * lado_celula_largura + 1, j * lado_celula_altura + 1))
                         else:
                             # Mostrar número de tesouros ao redor
                             texto_numero = fonte.render(str(conteudo_celula[i][j]), True, cores.WHITE)
@@ -130,11 +160,10 @@ while not jogo_cancelado:
                     pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 1)
 
             # Mostra o score na parte inferior da tela
-            texto_score = fonte.render(f"Score: {score}", True, preto)
-            tela.blit(texto_score, (0, altura_tela - 50))
+            texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
+            texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
+            tela.blit(texto_score_jogador1, (0, altura_tela - 50))
+            tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - 50))
             pygame.display.update()
 
 pygame.quit()
-
-
-
