@@ -12,10 +12,13 @@ fonte = pygame.font.SysFont("Comic Sans MS", 30)
 largura_tela = 800
 altura_tela = 600
 lado_celula = 50
+altura_indicador = 50
+altura_score = 50
 num_linhas = 4
 num_colunas = 4
 lado_celula_largura = largura_tela // num_colunas
-lado_celula_altura = (altura_tela - 50) // num_linhas  # espaço para o score
+altura_tabuleiro = altura_tela - altura_indicador - altura_score
+lado_celula_altura = altura_tabuleiro // num_linhas # espaço para o score
 
 # Resolução da tela
 tela = pygame.display.set_mode((largura_tela, altura_tela))
@@ -162,8 +165,17 @@ while not jogo_cancelado:
             # Mostra o score na parte inferior da tela
             texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
             texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
-            tela.blit(texto_score_jogador1, (0, altura_tela - 50))
-            tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - 50))
+            tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador))
+            tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador))
+            
+            # Desenha indicador de turno
+            if turno_jogador1:
+                texto_turno = fonte.render("Vez do Jogador 1", True, cores.WHITE)
+            else:
+                texto_turno = fonte.render("Vez do Jogador 2", True, cores.WHITE)
+                
+            tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador))
+            
             pygame.display.update()
 
 pygame.quit()
