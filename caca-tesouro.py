@@ -104,6 +104,29 @@ score_jogador1 = 0
 score_jogador2 = 0
 turno_jogador1 = True # Se caso for False significa que é o segundo jogador
 
+# Dsenha o score e o indicador de turno inicialmente
+tela.blit(imagem_de_fundo, (0, 0))
+
+# Desenha o tabuleiro
+for i in range(num_linhas):
+    for j in range(num_colunas):
+        pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 1)
+
+# Mostra o score na parte inferior da tela
+texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, branco)
+texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, branco)
+tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador))
+tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador))
+
+# Desenha o indicador de turno
+if turno_jogador1:
+    texto_turno = fonte.render("Vez do Jogador 1", True, branco)
+else:
+    texto_turno = fonte.render("Vez do Jogador 2", True, branco)
+tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador))
+
+pygame.display.update()
+
 # Laço do jogo
 while not jogo_cancelado:
     for evento in pygame.event.get():
