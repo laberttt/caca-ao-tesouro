@@ -93,8 +93,6 @@ for i in range(num_linhas):
 
             conteudo_celula[i][j] = tesouros_redor
 
-
-
 # Cria uma matriz para controlar a visualização do conteúdo das células
 celula_revelada = [[False for _ in range(num_linhas)] for _ in range(num_colunas)]
 jogo_cancelado = False
@@ -150,6 +148,7 @@ while not jogo_cancelado:
             if not celula_revelada[celula_x][celula_y]:
                 tela_mudou = True
                 celula_revelada[celula_x][celula_y] = True
+                
                 # Atualiza o score se encontrar um tesouro
                 if conteudo_celula[celula_x][celula_y] == "T":
                     if turno_jogador1:
@@ -161,6 +160,12 @@ while not jogo_cancelado:
                         score_jogador1 -= 50
                     else:
                         score_jogador2 -= 50
+                        
+                # Não deixando o score ficar negativo
+                if score_jogador1 < 0:
+                    score_jogador1 = 0
+                if score_jogador2 < 0:
+                    score_jogador2 = 0
                         
                 turno_jogador1 = not turno_jogador1
 
