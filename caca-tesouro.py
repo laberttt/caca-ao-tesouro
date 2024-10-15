@@ -9,7 +9,7 @@ branco = (255, 255, 255)
 fonte = pygame.font.SysFont("Comic Sans MS", 30)
 
 # Definições da tela e das células
-largura_tela = 800
+largura_tela = 512
 altura_tela = 600
 lado_celula = 50
 altura_indicador = 50
@@ -17,7 +17,7 @@ altura_score = 50
 num_linhas = 4
 num_colunas = 4
 lado_celula_largura = largura_tela // num_colunas
-altura_tabuleiro = altura_tela - altura_indicador - altura_score
+altura_tabuleiro = altura_tela - altura_indicador - altura_score - 50
 lado_celula_altura = altura_tabuleiro // num_linhas # espaço para o score
 
 # Resolução da tela
@@ -25,7 +25,7 @@ tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption("Caça ao Tesouro")
 
 # Carrega a imagem de fundo
-imagem_de_fundo = pygame.image.load("images/background_jogo.jpg")
+imagem_de_fundo = pygame.image.load("images/map_background.webp")
 imagem_de_fundo = pygame.transform.scale(imagem_de_fundo, (largura_tela, altura_tela)) # Ajusta o tamanho conforme necessário
 
 # Carrega a imagem do tesouro
@@ -43,7 +43,7 @@ tela.blit(imagem_de_fundo, (0, 0))
 matriz = [[None]*4 for _ in range(4)]
 for i in range(num_linhas):
     for j in range(num_colunas):
-        matriz[i][j] = pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 1)
+        matriz[i][j] = pygame.draw.rect(tela, cores.WHITE, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
 pygame.display.update()
 
 # Criando o tabuleiro virtual cujos elementos correspondem a um tesouro ('T')
@@ -108,20 +108,20 @@ tela.blit(imagem_de_fundo, (0, 0))
 # Desenha o tabuleiro
 for i in range(num_linhas):
     for j in range(num_colunas):
-        pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 1)
+        pygame.draw.rect(tela, cores.WHITE, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
 
 # Mostra o score na parte inferior da tela
-texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, branco)
-texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, branco)
-tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador))
-tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador))
+texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
+texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
+tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador - 50))
+tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador - 50))
 
 # Desenha o indicador de turno
 if turno_jogador1:
-    texto_turno = fonte.render("Vez do Jogador 1", True, branco)
+    texto_turno = fonte.render("Vez do Jogador 1", True, cores.WHITE)
 else:
-    texto_turno = fonte.render("Vez do Jogador 2", True, branco)
-tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador))
+    texto_turno = fonte.render("Vez do Jogador 2", True, cores.WHITE)
+tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador - 50))
 
 pygame.display.update()
 
@@ -146,8 +146,10 @@ while not jogo_cancelado:
 
             # Entra no if se a célula foi clicada pela primeira vez
             if not celula_revelada[celula_x][celula_y]:
+                print(f"Célula clicada: ({celula_x}, {celula_y})")  # Depuração
                 tela_mudou = True
                 celula_revelada[celula_x][celula_y] = True
+                print(f"Conteúdo da célula: {conteudo_celula[celula_x][celula_y]}")  # Depuração
                 
                 # Atualiza o score se encontrar um tesouro
                 if conteudo_celula[celula_x][celula_y] == "T":
@@ -166,9 +168,10 @@ while not jogo_cancelado:
                     score_jogador1 = 0
                 if score_jogador2 < 0:
                     score_jogador2 = 0
-                        
-                turno_jogador1 = not turno_jogador1
-
+                    
+            turno_jogador1 = not turno_jogador1
+                    
+                
         if tela_mudou:
             # Desenha a imagem de fundo a cada atualização
             tela.blit(imagem_de_fundo, (0, 0))
@@ -179,22 +182,22 @@ while not jogo_cancelado:
                     if celula_revelada[i][j]:
                         if conteudo_celula[i][j] == "T":
                             # Mostrar tesouro
-                            tela.blit(imagem_tesouro, (i * lado_celula_largura + 1, j * lado_celula_altura + 1))
+                            tela.blit(imagem_tesouro, (i * lado_celula_largura + 0.3 * lado_celula_largura, j * lado_celula_altura + 0.3 * lado_celula_altura))
                         elif conteudo_celula[i][j] == "B":
-                            # Mostrar tesouro
-                            tela.blit(imagem_buraco, (i * lado_celula_largura + 1, j * lado_celula_altura + 1))
+                            # Mostrar Buraco
+                            tela.blit(imagem_buraco, (i * lado_celula_largura + 0.3 * lado_celula_largura, j * lado_celula_altura + 0.3 * lado_celula_altura))
                         else:
                             # Mostrar número de tesouros ao redor
                             texto_numero = fonte.render(str(conteudo_celula[i][j]), True, cores.WHITE)
                             tela.blit(texto_numero, (i * lado_celula_largura + 0.4 * lado_celula_largura, j * lado_celula_altura + 0.4 * lado_celula_altura))
                     # Desenha o retângulo da célula
-                    pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 1)
+                    pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
 
             # Mostra o score na parte inferior da tela
             texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
             texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
-            tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador))
-            tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador))
+            tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador - 50))
+            tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador - 50))
             
             # Desenha indicador de turno
             if turno_jogador1:
@@ -202,8 +205,26 @@ while not jogo_cancelado:
             else:
                 texto_turno = fonte.render("Vez do Jogador 2", True, cores.WHITE)
                 
-            tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador))
+            tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador - 50)) 
             
             pygame.display.update()
+            
+            # Verifica se o jogo deve ser encerrado após atualizar a tela
+            if all(all(celula_revelada[i][j] for j in range(num_colunas)) for i in range(num_linhas)):
+                jogo_cancelado = True
+                    
+                # Mostrar o ganhador diretamente na tela
+                if score_jogador1 > score_jogador2:
+                    texto_ganhador = fonte.render("Jogador 1 GANHOU", True, cores.WHITE)
+                elif score_jogador2 > score_jogador1:
+                    texto_ganhador = fonte.render("Jogador 2 GANHOU", True, cores.WHITE)
+                else:
+                    texto_ganhador = fonte.render("EMPATE", True, cores.WHITE)
+                    
+                # Mostra o ganhador na parte inferior da tela  
+                tela.blit(texto_ganhador, (largura_tela // 2 - texto_ganhador.get_width() // 2, altura_tela - altura_indicador - 10))
+            
+                pygame.display.update()
+                pygame.time.delay(5000)  # Espera 5 segundos antes de fechar o jogo
 
 pygame.quit()
