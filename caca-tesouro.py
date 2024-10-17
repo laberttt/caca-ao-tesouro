@@ -2,10 +2,8 @@ import pygame
 import random
 import cores
 
-# Inicialização do Pygame e cores
+# Inicialização do Pygame e fonte
 pygame.init()
-preto = (0, 0, 0)
-branco = (255, 255, 255)
 fonte = pygame.font.SysFont("Comic Sans MS", 30)
 
 # Definições da tela e das células
@@ -40,16 +38,7 @@ imagem_buraco = pygame.transform.scale(imagem_buraco, (lado_celula - 2, lado_cel
 def desenhar_tela_inicial(tela, imagem_de_fundo):
     tela.blit(imagem_de_fundo, (0, 0))
 
-# Tabuleiro de 16 células (4 x 4)
-def criar_tabuleiro(tela, num_linhas, num_colunas, lado_celula_largura, lado_celula_altura):
-    matriz = [[None]*4 for _ in range(4)]
-    for i in range(num_linhas):
-        for j in range(num_colunas):
-            matriz[i][j] = pygame.draw.rect(tela, cores.WHITE, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
-    pygame.display.update()
-    return matriz
-
-# Função para desenhar o tabuleiro
+# Função para desenhar o tabuleiro 16 células (4 x 4)
 def desenhar_tabuleiro(tela, num_linhas, num_colunas, lado_celula_largura, lado_celula_altura):
     for i in range(num_linhas):
         for j in range(num_colunas):
@@ -62,8 +51,9 @@ def criar_conteudo_celula(num_linhas, num_colunas):
     return conteudo_celula
 
 # Marca com 'T' exatamente 6 células
-def marcar_tesouros(conteudo_celula, num_linhas, num_colunas, max_tesouros=6):
+def marcar_tesouros(conteudo_celula, num_linhas, num_colunas):
     num_tesouros = 0
+    max_tesouros = 6
     while num_tesouros < max_tesouros:
         i = random.randint(0, num_linhas - 1)
         j = random.randint(0, num_colunas - 1)
@@ -72,8 +62,9 @@ def marcar_tesouros(conteudo_celula, num_linhas, num_colunas, max_tesouros=6):
             num_tesouros += 1
 
 # Marca com 'B' exatamente 3 células
-def marcar_buracos(conteudo_celula, num_linhas, num_colunas, max_buracos=3):
+def marcar_buracos(conteudo_celula, num_linhas, num_colunas):
     num_buracos = 0
+    max_buracos = 3
     while num_buracos < max_buracos:
         i = random.randint(0, num_linhas - 1)
         j = random.randint(0, num_colunas - 1)
@@ -107,12 +98,12 @@ def criar_celula_revelada(num_linhas, num_colunas):
     return [[False for _ in range(num_linhas)] for _ in range(num_colunas)]
 
 # Variáveis para os jogadores
-def inicializar_jogadores():
-    return 0, 0, True
+score_jogador1 = 0
+score_jogador2 = 0
+turno_jogador1 = True
 
 # Desenha o score e o indicador de turno inicialmente
-def desenhar_score_e_turno(tela, imagem_de_fundo, fonte, score_jogador1, score_jogador2, turno_jogador1, largura_tela, altura_tela, altura_score, altura_indicador):
-    tela.blit(imagem_de_fundo, (0, 0))
+def desenhar_score_e_turno(tela, fonte, score_jogador1, score_jogador2, turno_jogador1, largura_tela, altura_tela, altura_score, altura_indicador):
     texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
     texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
     tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador - 50))
@@ -129,7 +120,9 @@ def desenhar_score_e_turno(tela, imagem_de_fundo, fonte, score_jogador1, score_j
 # Laço do jogo
 def loop_jogo(tela, imagem_de_fundo, fonte, imagem_tesouro, imagem_buraco, conteudo_celula, celula_revelada, num_linhas, num_colunas, largura_tela, altura_tela, altura_score, altura_indicador):
     jogo_cancelado = False
-    score_jogador1, score_jogador2, turno_jogador1 = inicializar_jogadores()
+    score_jogador1 = 0
+    score_jogador2 = 0
+    turno_jogador1 = True
     
     # Desenhando tabuleiro inicialmente
     desenhar_tabuleiro(tela, num_linhas, num_colunas, lado_celula_largura, lado_celula_altura)
@@ -200,23 +193,10 @@ def loop_jogo(tela, imagem_de_fundo, fonte, imagem_tesouro, imagem_buraco, conte
                                 texto_numero = fonte.render(str(conteudo_celula[i][j]), True, cores.WHITE)
                                 tela.blit(texto_numero, (i * lado_celula_largura + 0.4 * lado_celula_largura, j * lado_celula_altura + 0.4 * lado_celula_altura))
                         # Desenha o retângulo da célula
-                        pygame.draw.rect(tela, branco, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
+                        pygame.draw.rect(tela, cores.WHITE, (i * lado_celula_largura, j * lado_celula_altura, lado_celula_largura, lado_celula_altura), 4)
 
                 # Mostra o score na parte inferior da tela
-                texto_score_jogador1 = fonte.render(f"Jogador 1: {score_jogador1}", True, cores.WHITE)
-                texto_score_jogador2 = fonte.render(f"Jogador 2: {score_jogador2}", True, cores.WHITE)
-                tela.blit(texto_score_jogador1, (0, altura_tela - altura_score - altura_indicador - 50))
-                tela.blit(texto_score_jogador2, (largura_tela // 2, altura_tela - altura_score - altura_indicador - 50))
-
-                # Desenha indicador de turno
-                if turno_jogador1:
-                    texto_turno = fonte.render("Vez do Jogador 1", True, cores.WHITE)
-                else:
-                    texto_turno = fonte.render("Vez do Jogador 2", True, cores.WHITE)
-
-                tela.blit(texto_turno, (largura_tela // 2 - texto_turno.get_width() // 2, altura_tela - altura_indicador - 50))
-
-                pygame.display.update()
+                desenhar_score_e_turno(tela, fonte, score_jogador1, score_jogador2, turno_jogador1, largura_tela, altura_tela, altura_score, altura_indicador)
 
                 # Verifica se o jogo deve ser encerrado após atualizar a tela
                 if all(all(celula_revelada[i][j] for j in range(num_colunas)) for i in range(num_linhas)):
@@ -241,12 +221,13 @@ def loop_jogo(tela, imagem_de_fundo, fonte, imagem_tesouro, imagem_buraco, conte
 # Função principal para iniciar o jogo
 def main():
     desenhar_tela_inicial(tela, imagem_de_fundo)
+    desenhar_tabuleiro(tela, num_linhas, num_colunas, lado_celula_largura, lado_celula_altura)
     conteudo_celula = criar_conteudo_celula(num_linhas, num_colunas)
     marcar_tesouros(conteudo_celula, num_linhas, num_colunas)
     marcar_buracos(conteudo_celula, num_linhas, num_colunas)
     calcular_tesouros_redor(conteudo_celula, num_linhas, num_colunas)
     celula_revelada = criar_celula_revelada(num_linhas, num_colunas)
-    desenhar_score_e_turno(tela, imagem_de_fundo, fonte, 0, 0, True, largura_tela, altura_tela, altura_score, altura_indicador)
+    desenhar_score_e_turno(tela, fonte, score_jogador1, score_jogador2, turno_jogador1, largura_tela, altura_tela, altura_score, altura_indicador)
     loop_jogo(tela, imagem_de_fundo, fonte, imagem_tesouro, imagem_buraco, conteudo_celula, celula_revelada, num_linhas, num_colunas, largura_tela, altura_tela, altura_score, altura_indicador)
 
 if __name__ == "__main__":
